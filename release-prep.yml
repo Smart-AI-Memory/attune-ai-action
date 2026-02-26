@@ -1,0 +1,22 @@
+name: Attune Release Prep
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  attune-release-prep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: Smart-AI-Memory/attune-ai-action@v1
+        with:
+          workflow: release-prep
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          tier_strategy: auto
+          fail_on_critical: 'true'

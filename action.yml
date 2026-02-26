@@ -1,0 +1,91 @@
+name: 'Attune AI Workflows'
+description: 'AI-powered code review and release prep for Claude, with smart tier routing and cost optimization'
+author: 'Smart AI Memory'
+
+branding:
+  icon: 'zap'
+  color: 'purple'
+
+inputs:
+  workflow:
+    description: 'Attune workflow to run: code-review or release-prep'
+    required: true
+  anthropic_api_key:
+    description: 'Your Anthropic API key'
+    required: true
+  python_version:
+    description: 'Python version to use'
+    required: false
+    default: '3.12'
+  attune_version:
+    description: 'Attune AI version to install (default: latest)'
+    required: false
+    default: 'latest'
+  config:
+    description: 'Path to attune config file (optional)'
+    required: false
+    default: ''
+  tier_strategy:
+    description: 'Cost tier strategy: auto, cheap, capable, or premium'
+    required: false
+    default: 'auto'
+  fail_on_critical:
+    description: 'Fail the action if critical issues are found'
+    required: false
+    default: 'true'
+
+outputs:
+  report:
+    description: 'Path to the generated report file'
+  summary:
+    description: 'Brief summary of findings'
+  issues_found:
+    description: 'Number of issues found'
+  cost_saved:
+    description: 'Estimated cost savings from tier routing'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python_version }}
+        cache: 'pip'
+
+    - name: Install Attune AI
+      shell: bash
+      run: |
+        if [ "${{ inputs.attune_version }}" = "latest" ]; then
+          pip install attune-ai[developer]
+        else
+          pip install attune-ai[developer]==${{ inputs.attune_version }}
+        fi
+
+    - name: Run Attune Workflow
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic_api_key }}
+        ATTUNE_TIER_STRATEGY: ${{ inputs.tier_strategy }}
+        ATTUNE_CI_MODE: 'true'
+      run: |
+        python ${{ github.action_path }}/src/run_workflow.py \
+          --workflow "${{ inputs.workflow }}" \
+          --config "${{ inputs.config }}" \
+          --fail-on-critical "${{ inputs.fail_on_critical }}" \
+          --output-dir "${{ runner.temp }}/attune-results"
+
+    - name: Upload Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: attune-${{ inputs.workflow }}-report
+        path: ${{ runner.temp }}/attune-results/
+
+    - name: Post Summary
+      if: always()
+      shell: bash
+      run: |
+        if [ -f "${{ runner.temp }}/attune-results/summary.md" ]; then
+          cat "${{ runner.temp }}/attune-results/summary.md" >> $GITHUB_STEP_SUMMARY
+        fi

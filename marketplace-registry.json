@@ -1,0 +1,67 @@
+{
+  "name": "Smart AI Memory Marketplace",
+  "description": "Claude Code plugins by Smart AI Memory — AI-powered developer workflows with cost optimization",
+  "owner": {
+    "name": "Smart AI Memory",
+    "email": "patrick.roebuck@smartaimemory.com",
+    "url": "https://smartaimemory.com"
+  },
+  "repository": "https://github.com/Smart-AI-Memory",
+  "plugins": [
+    {
+      "name": "attune-ai-plugin",
+      "version": "3.6.0",
+      "description": "AI-powered developer workflow orchestration with 13 workflows, 18 MCP tools, multi-agent orchestration, and smart tier routing that saves 34-86% on LLM costs. Plan-first execution and XML-enhanced prompting built on Anthropic's best practices.",
+      "repository": "https://github.com/Smart-AI-Memory/attune-ai",
+      "category": "developer-tools",
+      "license": "Apache-2.0",
+      "python": ">=3.10",
+      "install": "pip install attune-ai[developer]",
+      "keywords": [
+        "workflows",
+        "code-review",
+        "security-audit",
+        "testing",
+        "release-prep",
+        "cost-optimization",
+        "multi-agent",
+        "mcp-tools"
+      ],
+      "features": {
+        "workflows": 13,
+        "mcp_tools": 18,
+        "skills": 7,
+        "slash_commands": true,
+        "feedback_loops": true,
+        "tier_routing": true
+      },
+      "compatibility": [
+        "claude-code-cli",
+        "cowork"
+      ]
+    },
+    {
+      "name": "attune-redis",
+      "version": "1.0.0",
+      "description": "Redis memory backend plugin for Attune AI. Persistent feedback loops, usage tracking, and semantic memory with 5 MCP tools.",
+      "repository": "https://github.com/Smart-AI-Memory/attune-ai",
+      "category": "developer-tools",
+      "license": "Apache-2.0",
+      "python": ">=3.10",
+      "install": "pip install attune-redis",
+      "keywords": [
+        "redis",
+        "memory",
+        "persistence",
+        "feedback-loops"
+      ],
+      "requires": [
+        "attune-ai-plugin"
+      ],
+      "compatibility": [
+        "claude-code-cli",
+        "cowork"
+      ]
+    }
+  ]
+}
